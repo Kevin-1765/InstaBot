@@ -37,10 +37,11 @@ def self_info():
             print 'No. of followers are : %s ' % (my_info['data']['counts']['followed_by'])
             print 'No. of peoples you are following : %s' % (my_info['data']['counts']['follows'])
             print 'No of posts : %s' % (my_info['data']['counts']['media'])
+
         else:
             print 'User does not exist'
     else:
-        print 'Received Meta Code is ' +  my_info['meta']['code']
+        print 'Received Meta Code is ' + my_info['meta']['code']
 
 
 '''
@@ -85,8 +86,8 @@ def user_info(insta_username):
                 # Printing user info
                 print 'Username : %s' % (user_info['data']['username'])
                 print 'Full Name :%s' % (user_info['data']['full_name'])
-                print 'No of peoples He/She is following : %s ' % (user_info['data']['counts']['followed_by'])
-                print 'No. of peoples following him/her are: %s' % (user_info['data']['counts']['follows'])
+                print 'No of peoples He/She is following : %s ' % (user_info['data']['counts']['follows'])
+                print 'No. of peoples following him/her are: %s' % (user_info['data']['counts']['followed_by'])
                 print 'No of posts : %s' % (user_info['data']['counts']['media'])
             else:
                 print 'User have no data!'
@@ -372,19 +373,21 @@ def search_by_hashtag(tag_name):
     request_url = BASE_URL+'/tags/search?q=%s&access_token=%s' % (tag_name, ACCESS_TOKEN)
     tag_info = requests.get(request_url).json()
     if tag_info['meta']['code'] == 200:
-        label = ''
-        tags = ''
+        label = []
+        tags = []
         if len(tag_info['data']):
-            for x in range(0, len(tag_info['data'])):
-                label = tag_info['data'][x]['name']
-                tags = tag_info['data'][x]['media_count']
+            # Getting the count of post with a particular Hashtag
+            # NOTE Only 10 different Hash Tags will be displayed in Bar Chart
+            for x in range(0, 10):
+                label.insert(x, tag_info['data'][x]['name'])
+                tags.insert(x, tag_info['data'][x]['media_count'])
 
             y_pos = np.arange(len(label))
-            plt.bar(y_pos,tags, align='center', alpha=0.5)
+            plt.bar(y_pos, tags, align='center', alpha=0.8)
             plt.xticks(y_pos, label)
-            plt.ylabel('Usage')
-            plt.title('Programming language usage')
+            plt.ylabel('Number of posts shared with the Hashtag '+tag_name)
             plt.show()
+
     else:
         print 'There are no post with this tag'''
 '''
@@ -407,7 +410,7 @@ def start():
         print '8.  Find out what your friend have liked recently'
         print '9.  Delete the negative comments from your post'
         print '10. Get the comment list on post'
-        print '11. Search by Hashtag'
+        print '11. Find out how many post are shared using a Hash Tag'
         print '12. Exit'
         option = int(raw_input('Enter your choice : '))
 
@@ -433,7 +436,7 @@ def start():
                 username = requests.get(request_url).json()
                 like_a_post(username['data']['username'])
             elif query.upper() == 'N':
-                print 'Enter the friend\'s name who\'s post you wanna like'
+                print 'Enter the friend\'s name who\'s post you wanna like : '
                 username = raw_input()
                 like_a_post(username)
             else:
@@ -446,7 +449,7 @@ def start():
                 username = requests.get(request_url).json()
                 comment_on_post(username['data']['username'])
             elif query.upper() == 'N':
-                print 'Enter the friend\'s name on who\'s post you wanna comment'
+                print 'Enter the friend\'s name on who\'s post you wanna comment : '
                 username = raw_input()
                 comment_on_post(username)
             else:
@@ -456,7 +459,7 @@ def start():
             own_media_liked()
 
         elif option == 8:
-            username = raw_input('Enter your friends name')
+            username = raw_input('Enter your friends name : ')
             user_media_liked(username)
 
         elif option == 9:
@@ -466,7 +469,7 @@ def start():
                 username = requests.get(request_url).json()
                 del_negative_comment(username['data']['username'])
             elif query.upper() == 'N':
-                print 'Enter the friend\'s name who\'s post from you wanna delete comments :'
+                print 'Enter the friend\'s name who\'s post from you wanna delete comments : '
                 username = raw_input()
                 del_negative_comment(username)
             else:
@@ -480,14 +483,14 @@ def start():
                 username = userdata['data']['username']
                 get_comment_list(username)
             elif query.upper() == 'N':
-                print 'Enter the friend\'s name who\'s post from you wanna get the comments :'
+                print 'Enter the friend\'s name who\'s post from you wanna get the comments : '
                 username = raw_input()
                 get_comment_list(username)
             else:
                 print 'Wrong choice !'
 
         elif option == 11:
-            tag_name = raw_input('Enter the name of tag for which you want to search ')
+            tag_name = raw_input('Enter the name of tag for which you want to search : ')
             search_by_hashtag(tag_name)
 
         elif option == 12:
